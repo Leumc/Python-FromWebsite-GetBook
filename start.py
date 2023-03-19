@@ -58,7 +58,11 @@ def apart(content__,apart_key,plus_1,plus_2):
 def getAvailablePage(url_f):
 	#从目录网页中获取可用的章节网址(初步处理)
 	pre_(url_f)
-	return getContent(getLine('</a></li><li><a href="',(176,183),3)[1],'None_','None_',0)
+	line_s=getLine('</a></li><li><a href="',(176,183),3)
+	try:
+		return getContent(line_s[1],'None_','None_',0)
+	except:
+		return getContent(line_s[0],'None_','None_',0)
 
 def CombineUrl(basic_url,task_url):
 	#结合Url
@@ -175,6 +179,7 @@ def getSearchR(keyword):
 	
 def searchR_display(keyword):
 	con_=getSearchR(keyword)
+	global research_
 	if con_[0]==[]:
 		print('\033[31m无检索结果！请重新检索！\033[0m')
 		return False
@@ -185,12 +190,17 @@ def searchR_display(keyword):
 			print('\033[33m'+str(i_)+'\033[36m.'+con_[1][i_]+'\033[0m')
 		while True:
 			try:
-				input_=int(input('\033[32m>>输入编号：\033[33m'))
-				if input_ in range(0,len(con_[0])):
-					return con_[0][input_],con_[1][input_]
-					break
+				input_=input('\033[32m>>输入编号("/rs"重新检索)：\033[33m')
+				if int(input_) in range(0,len(con_[0])):
+					research_=False
+					return con_[0][int(input_)],con_[1][int(input_)]
 				else:print('\033[31m>>超出范围！请重新输入！\033[0m')
-			except:print('\033[31m错误！请重新输入')
+			except:
+				if input_=='/rs':
+					research_=True
+					break
+				else:
+					print('\033[31m错误！请重新输入')
 		#print(input_)
 		
 	
@@ -245,7 +255,7 @@ while Judgement:
 		Judgement0=True
 		while Judgement0:
 			url__=searchR_display(input('\033[33m输入关键字：\033[34m'))
-			if url__!=False:
+			if url__!=False and research_==False:
 				Judgement0=False
 				Judgement1=True
 				while Judgement1:
